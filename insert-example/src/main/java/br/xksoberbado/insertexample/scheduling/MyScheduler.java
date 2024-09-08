@@ -7,24 +7,20 @@ import org.jeasy.random.EasyRandom;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class MyScheduler {
 
     private static final EasyRandom EASY_RANDOM = new EasyRandom();
-    private static AtomicInteger atomicInteger = new AtomicInteger(1);
 
     private final PersonRepository repository;
 
-
-    @Scheduled(cron = "*/1 * * * * *")
+    @Scheduled(cron = "*/2 * * * * *")
     public void run() {
-        final var people = EASY_RANDOM.objects(Person.class, 1000)
-            .peek(person -> person.setNumber(atomicInteger.getAndIncrement()))
-            .toList();
+        final var person = Person.of(UUID.randomUUID(), EASY_RANDOM.nextObject(String.class));
 
-        repository.saveAll(people);
+        repository.save(person);
     }
 }
